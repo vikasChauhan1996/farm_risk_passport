@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FRINT | Farm Risk Passport</title>
+<style>
+  :root {
+    --green:#28552b; --green-2:#6f963f; --pale:#eef3e8; --line:#dfe4dc;
+    --ink:#17231b; --muted:#657064; --orange:#ef6b16; --blue:#3478ae;
+    --teal:#2c8d91; --paper:#fff; --soft:#f8f9f6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#edf0eb;color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+  .page{width:min(1180px,calc(100% - 32px));margin:24px auto;background:var(--paper);padding:24px 26px 28px;box-shadow:0 8px 28px #1e2a1e12}
+  .topbar{display:grid;grid-template-columns:180px 1fr 145px;align-items:center;gap:18px;border-bottom:2px solid #9bb18b;padding:0 8px 16px}
+  .brand{display:flex;align-items:center;gap:9px;color:var(--green);font-weight:800;font-size:27px}
+  .brand-mark{font-size:35px;line-height:1;color:#78a34b}
+  .brand small{display:block;font-size:10px;font-weight:500;color:#53624f;letter-spacing:.2px}
+  h1{margin:0;text-align:center;color:#244b26;font-size:clamp(23px,3vw,39px);letter-spacing:.5px}
+  .date{font-size:14px;line-height:1.55;text-align:right}
+  .section{border:1px solid var(--line);border-radius:10px;margin-top:18px;padding:16px 16px 18px;position:relative}
+  .section-title{display:flex;align-items:center;gap:12px;margin:-29px 0 14px 0;position:relative}
+  .num{background:var(--green);color:#fff;border-radius:4px;padding:5px 11px;font-weight:700;font-size:17px}
+  .section-title h2{font-size:18px;color:#244b26;margin:0;background:#fff;padding:0 5px}
+  .sub{font-weight:400;color:#53624f}
+  .details-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:0}
+  .detail{padding:12px 13px;min-height:76px;border-right:1px solid var(--line);display:flex;gap:11px;align-items:center}
+  .detail:nth-child(6n){border-right:0}
+  .detail:nth-child(n+7){border-top:1px dashed var(--line)}
+  .detail-icon{font-size:26px;color:#6b963f;min-width:30px;text-align:center}
+  .detail b{display:block;font-size:14px;margin-bottom:7px}
+  .detail span{font-size:15px}
+  .score-layout{display:grid;grid-template-columns:1.12fr 2.7fr;gap:18px;align-items:stretch}
+  .main-score{display:flex;align-items:center;justify-content:center;min-height:225px}
+  .gauge{width:100%;max-width:310px}
+  .score-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .score-card{border:1px solid var(--line);border-radius:11px;text-align:center;padding:15px 8px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .score-icon{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#f0f4eb;font-size:28px;margin-bottom:9px}
+  .score-card strong{font-size:14px;min-height:34px;display:flex;align-items:center}
+  .ring{width:88px;height:88px;border-radius:50%;display:grid;place-items:center;margin:8px 0 2px;background:conic-gradient(var(--ring) calc(var(--pct)*1%),#e2e5e2 0);position:relative}
+  .ring:before{content:"";position:absolute;inset:8px;background:white;border-radius:50%}
+  .ring span{position:relative;font-size:26px;font-weight:700;color:#24372c}
+  .outof{font-size:14px}
+  table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border:1px solid var(--line);border-radius:8px}
+  th,td{text-align:center;padding:15px 9px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:14px}
+  th{background:#eef2e8;font-weight:700;line-height:1.35}
+  td:last-child,th:last-child{border-right:0}
+  tr:last-child td{border-bottom:0}
+  .margin{color:#28702d;font-weight:700}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .location-content{display:grid;grid-template-columns:1.25fr .85fr;gap:18px;align-items:stretch}
+  .map{min-height:245px;border-radius:7px;overflow:hidden;position:relative;background:
+    linear-gradient(28deg,transparent 48%,#d8dfc8 49%,#d8dfc8 52%,transparent 53%),
+    linear-gradient(115deg,#a9b99a 0 18%,#c3c9a7 18% 34%,#8fa77e 34% 50%,#d0d4b4 50% 70%,#a7b995 70%);
+    background-size:110px 85px,160px 125px}
+  .map:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(22deg,transparent 0 28px,#ffffff35 29px 31px),repeating-linear-gradient(112deg,transparent 0 36px,#586f4b25 37px 39px)}
+  .parcel{position:absolute;inset:12% 18%;width:64%;height:76%;filter:drop-shadow(0 2px 2px #0005)}
+  .pin{position:absolute;left:49%;top:47%;font-size:27px;transform:translate(-50%,-50%);text-shadow:0 2px 3px #0005}
+  .location-facts{display:flex;flex-direction:column;justify-content:space-around}
+  .fact{padding:7px 0 9px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:32px 1fr;gap:8px}
+  .fact:last-child{border:0}
+  .fact-icon{font-size:23px;color:#709744}
+  .fact b{display:block;color:#315c2d;font-size:14px;margin-bottom:4px}
+  .fact span{font-size:14px;line-height:1.4}
+  .risk-panel{height:100%;min-height:245px;border:1px solid #e6e8e3;border-radius:9px;background:#fcfcfa;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:14px}
+  .risk-item{text-align:center;padding:8px 12px}
+  .risk-item+ .risk-item{border-left:1px dotted #bfc5bc}
+  .risk-symbol{font-size:58px;line-height:1.2;color:#81a443}
+  .risk-item:nth-child(2) .risk-symbol{color:var(--orange)}
+  .risk-item h3{font-size:18px;margin:8px 0 12px}
+  .risk-value{display:inline-block;padding:9px 20px;border-radius:12px;background:#fcebe3;color:#e65c0b;font-size:19px;font-weight:700}
+  .weather-wrap{padding:0 4px}
+  .legend{display:flex;justify-content:center;gap:34px;font-size:14px;margin:0 0 8px}
+  .legend i{display:inline-block;width:10px;height:10px;margin-right:7px}
+  .legend .rain{background:var(--blue)}
+  .legend .temp{width:18px;height:3px;background:var(--orange);vertical-align:middle;position:relative}
+  .legend .temp:after{content:"";position:absolute;width:7px;height:7px;border-radius:50%;background:var(--orange);top:-2px;left:6px}
+  .chart{width:100%;height:auto;display:block}
+  .axis-label{font-size:13px;fill:#285b9b}
+  .axis-label.orange{fill:var(--orange)}
+  .chart-text{font-size:12px;fill:#151b17}
+  .month{font-size:13px;fill:#17231b}
+  .gridline{stroke:#e5e9e2;stroke-width:1}
+  .bar{fill:var(--blue)}
+  .temp-line{fill:none;stroke:var(--orange);stroke-width:2}
+  .temp-dot{fill:var(--orange)}
+  @media(max-width:850px){
+    .page{padding:18px 14px}.topbar{grid-template-columns:1fr 1fr}.topbar h1{grid-column:1/-1;grid-row:2}.date{grid-column:2;grid-row:1}
+    .details-grid{grid-template-columns:repeat(2,1fr)}.detail{border-right:0!important;border-top:1px dashed var(--line)}
+    .score-layout{grid-template-columns:1fr}.score-cards{grid-template-columns:repeat(2,1fr)}
+    .two-col{grid-template-columns:1fr}
+  }
+  @media(max-width:520px){
+    .topbar{grid-template-columns:1fr}.date{text-align:left;grid-column:auto;grid-row:auto}.topbar h1{grid-column:auto;grid-row:auto;text-align:left}
+    .details-grid{grid-template-columns:1fr 1fr}.detail{padding:10px 4px}.detail span{font-size:13px}
+    .score-cards{gap:8px}.score-card{padding:10px 4px}.location-content{grid-template-columns:1fr}
+    .risk-panel{min-height:210px;padding:8px}.risk-value{font-size:15px;padding:8px 10px}
+    th,td{font-size:11px;padding:9px 4px}
+  }
+  @media print{
+    body{background:#fff}.page{width:100%;margin:0;box-shadow:none;padding:14px}
+    .section{break-inside:avoid}.topbar{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<main class="page">
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">✿</span><div>FRINT<small>Farm Risk Intelligence</small></div></div>
+    <h1>FARM RISK PASSPORT</h1>
+    <div class="date">Report Date:<br><strong>25 May 2025</strong></div>
+  </header>
+
+  <section class="section">
+    <div class="section-title"><span class="num">1</span><h2>FARM DETAILS</h2></div>
+    <div class="details-grid">
+      <div class="detail"><div class="detail-icon">♙</div><div><b>Farmer Name</b><span>Ramesh Kumar</span></div></div>
+      <div class="detail"><div class="detail-icon">♧</div><div><b>State</b><span>Rajasthan</span></div></div>
+      <div class="detail"><div class="detail-icon">♙</div><div><b>District</b><span>Jaipur</span></div></div>
+      <div class="detail"><div class="detail-icon">⌂</div><div><b>Village</b><span>Rampura</span></div></div>
+      <div class="detail"><div class="detail-icon">♧</div><div><b>Block</b><span>Chomu</span></div></div>
+      <div class="detail"><div class="detail-icon">▤</div><div><b>Khasra No.</b><span>123/4</span></div></div>
+      <div class="detail"><div class="detail-icon">♧</div><div><b>Area</b><span>2.50 Acre</span></div></div>
+      <div class="detail"><div class="detail-icon">♣</div><div><b>Soil Type</b><span>Loamy Sand</span></div></div>
+      <div class="detail"><div class="detail-icon">▦</div><div><b>Current Season</b><span>Rabi 2024-25 (Wheat)</span></div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title"><span class="num">2</span><h2>CREDIT SCORE</h2></div>
+    <div class="score-layout">
+      <div class="main-score">
+        <svg class="gauge" viewBox="0 0 320 220" role="img" aria-label="Overall score 76 out of 100, Good">
+          <path d="M42 177 A118 118 0 0 1 278 177" fill="none" stroke="#e2e4e2" stroke-width="25" stroke-linecap="butt"/>
+          <path d="M42 177 A118 118 0 0 1 249 91" fill="none" stroke="#c9ca55" stroke-width="25"/>
+          <path d="M249 91 A118 118 0 0 1 278 177" fill="none" stroke="#91ad49" stroke-width="25"/>
+          <g fill="#18211b" font-size="14"><text x="18" y="190">0</text><text x="48" y="55">30</text><text x="158" y="24">60</text><text x="269" y="76">80</text><text x="292" y="190">100</text></g>
+          <text x="160" y="143" text-anchor="middle" font-size="66" font-weight="700" fill="#174a21">76</text>
+          <text x="218" y="143" font-size="17" fill="#18211b">/100</text>
+          <rect x="105" y="168" width="110" height="31" rx="15" fill="#edf2e5"/>
+          <text x="160" y="190" text-anchor="middle" font-size="17" font-weight="700" fill="#28552b">GOOD</text>
+        </svg>
+      </div>
+      <div class="score-cards">
+        <div class="score-card"><div class="score-icon">♧</div><strong>Yield Score</strong><div class="ring" style="--pct:72;--ring:#4c8b38"><span>72</span></div><div class="outof">/100</div></div>
+        <div class="score-card"><div class="score-icon">₹</div><strong>Revenue Score</strong><div class="ring" style="--pct:78;--ring:#4c8b38"><span>78</span></div><div class="outof">/100</div></div>
+        <div class="score-card"><div class="score-icon">🚜</div><strong>Utilization Score</strong><div class="ring" style="--pct:70;--ring:#3478ae"><span>70</span></div><div class="outof">/100</div></div>
+        <div class="score-card"><div class="score-icon">☂</div><strong>Weather Score</strong><div class="ring" style="--pct:68;--ring:#2c8d91"><span>68</span></div><div class="outof">/100</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title"><span class="num">3</span><h2>P&amp;L ESTIMATION <span class="sub">(Past Season)</span></h2></div>
+    <table>
+      <thead><tr><th>Past Season</th><th>Crop Sown</th><th>Area Sown<br>(Acre)</th><th>Estimated Cost of<br>Production (₹)</th><th>Estimated Value of<br>Production (₹)</th><th>Estimated Gross<br>Margin (₹)</th></tr></thead>
+      <tbody><tr><td>Rabi 2023-24</td><td>Wheat</td><td>2.50</td><td>22,500</td><td>52,000</td><td class="margin">29,500</td></tr></tbody>
+    </table>
+  </section>
+
+  <div class="two-col">
+    <section class="section">
+      <div class="section-title"><span class="num">4</span><h2>FARM LOCATION</h2></div>
+      <div class="location-content">
+        <div class="map" aria-label="Illustrative farm boundary map">
+          <svg class="parcel" viewBox="0 0 220 220" aria-hidden="true"><polygon points="42,18 175,54 192,130 115,207 20,95" fill="#ffffff12" stroke="#fff" stroke-width="5" stroke-linejoin="round"/></svg>
+          <div class="pin">📍</div>
+        </div>
+        <div class="location-facts">
+          <div class="fact"><div class="fact-icon">⌗</div><div><b>Area (Acre)</b><span>2.50</span></div></div>
+          <div class="fact"><div class="fact-icon">♧</div><div><b>Coordinates</b><span>26.8921° N,<br>75.7148° E</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title"><span class="num">5</span><h2>RISK PROFILE</h2></div>
+      <div class="risk-panel">
+        <div class="risk-item"><div class="risk-symbol">♧</div><h3>Overall Risk</h3><div class="risk-value">MODERATE</div></div>
+        <div class="risk-item"><div class="risk-symbol">⚠</div><h3>Risk Category</h3><div class="risk-value" style="background:transparent">MODERATE</div></div>
+      </div>
+    </section>
+  </div>
+
+  <section class="section">
+    <div class="section-title"><span class="num">6</span><h2>WEATHER TREND <span class="sub">(Current Season)</span></h2></div>
+    <div class="weather-wrap">
+      <div class="legend"><span><i class="rain"></i>Rainfall (mm)</span><span><i class="temp"></i>Temperature (°C)</span></div>
+      <svg class="chart" viewBox="0 0 1000 255" role="img" aria-label="Monthly rainfall bars and temperature line from June to May">
+        <g class="gridline"><line x1="70" y1="20" x2="70" y2="210"/><line x1="70" y1="210" x2="940" y2="210"/><line x1="70" y1="162" x2="940" y2="162"/><line x1="70" y1="114" x2="940" y2="114"/><line x1="70" y1="66" x2="940" y2="66"/><line x1="70" y1="20" x2="940" y2="20"/></g>
+        <g class="axis-label"><text x="42" y="214">0</text><text x="30" y="166">60</text><text x="22" y="118">120</text><text x="22" y="70">180</text><text x="22" y="24">300</text><text transform="translate(15 150) rotate(-90)">Rainfall (mm)</text></g>
+        <g class="axis-label orange"><text x="950" y="214">12</text><text x="950" y="166">18</text><text x="950" y="118">24</text><text x="950" y="70">30</text><text x="950" y="24">42</text><text transform="translate(990 155) rotate(-90)">Temperature (°C)</text></g>
+        <g>
+          <rect class="bar" x="94" y="166" width="24" height="44"/><rect class="bar" x="165" y="130" width="24" height="80"/><rect class="bar" x="236" y="106" width="24" height="104"/><rect class="bar" x="307" y="160" width="24" height="50"/><rect class="bar" x="378" y="196" width="24" height="14"/><rect class="bar" x="449" y="205" width="24" height="5"/><rect class="bar" x="520" y="207" width="24" height="3"/><rect class="bar" x="591" y="203" width="24" height="7"/><rect class="bar" x="662" y="198" width="24" height="12"/><rect class="bar" x="733" y="189" width="24" height="21"/><rect class="bar" x="804" y="177" width="24" height="33"/><rect class="bar" x="875" y="166" width="24" height="44"/>
+        </g>
+        <g class="chart-text" text-anchor="middle"><text x="106" y="158">68</text><text x="177" y="122">124</text><text x="248" y="98">160</text><text x="319" y="152">78</text><text x="390" y="188">22</text><text x="461" y="197">8</text><text x="532" y="199">5</text><text x="603" y="195">10</text><text x="674" y="190">18</text><text x="745" y="181">32</text><text x="816" y="169">48</text><text x="887" y="158">67</text></g>
+        <polyline class="temp-line" points="106,52 177,61 248,69 319,77 390,90 461,107 532,123 603,132 674,121 745,101 816,75 887,54"/>
+        <g class="temp-dot"><circle cx="106" cy="52" r="4"/><circle cx="177" cy="61" r="4"/><circle cx="248" cy="69" r="4"/><circle cx="319" cy="77" r="4"/><circle cx="390" cy="90" r="4"/><circle cx="461" cy="107" r="4"/><circle cx="532" cy="123" r="4"/><circle cx="603" cy="132" r="4"/><circle cx="674" cy="121" r="4"/><circle cx="745" cy="101" r="4"/><circle cx="816" cy="75" r="4"/><circle cx="887" cy="54" r="4"/></g>
+        <g class="chart-text" text-anchor="middle"><text x="106" y="40">34.5</text><text x="177" y="49">31.9</text><text x="248" y="57">30.2</text><text x="319" y="65">29.1</text><text x="390" y="78">26.8</text><text x="461" y="95">22.6</text><text x="532" y="111">19.5</text><text x="603" y="120">17.8</text><text x="674" y="109">20.1</text><text x="745" y="89">24.5</text><text x="816" y="63">29.3</text><text x="887" y="42">33.6</text></g>
+        <g class="month" text-anchor="middle"><text x="106" y="232">Jun</text><text x="177" y="232">Jul</text><text x="248" y="232">Aug</text><text x="319" y="232">Sep</text><text x="390" y="232">Oct</text><text x="461" y="232">Nov</text><text x="532" y="232">Dec</text><text x="603" y="232">Jan</text><text x="674" y="232">Feb</text><text x="745" y="232">Mar</text><text x="816" y="232">Apr</text><text x="887" y="232">May</text></g>
+      </svg>
+    </div>
+  </section>
+</main>
+</body>
+</html>
